@@ -1,0 +1,21 @@
+{
+    "name": "zein/http",
+    "description": "Http library for manage request, response & route http content",
+    "type": "library",
+    "require": {
+        "symfony/http-foundation": "^5"
+    },
+    "license": "GPL-3.0",
+    "autoload": {
+        "psr-4": {
+            "Zein\\Http\\": "src/",
+            "App\\": "test/app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Drajat Hasan",
+            "email": "drajathasan20@gmail.com"
+        }
+    ]
+}
