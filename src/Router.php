@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:55:52
- * @modify date 2022-04-13 10:17:45
+ * @modify date 2022-04-14 07:49:25
  * @license GPLv3
  * @desc [description]
  */
@@ -70,9 +70,9 @@ class Router
      */
     public function getRequest()
     {
-        if (is_null($this->instance)) $this->request = new Request;
+        if (is_null(self::$request)) self::$request = new Request;
 
-        return $this->request;
+        return self::$request;
     }
 
     /**
@@ -116,7 +116,7 @@ class Router
         $static = new Static;
         $static->getInstance()->getRequest();
 
-        $requestMethod = Router::$instance->request->getMethod();
+        $requestMethod = Router::$request->getMethod();
 
         if (method_exists(Router::$instance, $method))
         {
