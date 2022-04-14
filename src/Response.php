@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-13 12:45:34
- * @modify date 2022-04-14 10:31:07
+ * @modify date 2022-04-14 10:32:33
  * @license GPLv3
  * @desc [description]
  */
@@ -47,7 +47,7 @@ class Response extends SymfonyResponse
 
             static::getInstance()->headers->set('Content-Type', $static->scope[$method]);
             
-            if (is_callable($paramter[1])) exit(call_user_func_array($paramter[1], [static::getInstance(), $paramter[0]]));
+            if (isset($paramter[1]) && is_callable($paramter[1])) exit(call_user_func_array($paramter[1], [static::getInstance(), $paramter[0]]));
 
             static::getInstance()->setContent($paramter[0])->send();
         }
