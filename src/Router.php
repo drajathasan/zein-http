@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:55:52
- * @modify date 2022-04-14 07:49:25
+ * @modify date 2022-04-14 08:53:21
  * @license GPLv3
  * @desc [description]
  */
@@ -56,7 +56,7 @@ class Router
      *
      * @return void
      */
-    private function getInstance()
+    private static function getInstance()
     {
         if (is_null(self::$instance)) self::$instance = new Router;
         
@@ -93,9 +93,9 @@ class Router
      *
      * @return void
      */
-    public function run()
+    public static function run()
     {
-       Resolver::match(Router::getInstance());
+        Resolver::match(Router::getInstance());
     }
 
     public function __call(string $method, array $parameter)
@@ -113,19 +113,19 @@ class Router
 
     public static function __callStatic(string $method, array $parameter)
     {
-        $static = new Static;
-        $static->getInstance()->getRequest();
+        $instance = self::getInstance();
+        $instance->getRequest();
 
-        $requestMethod = Router::$request->getMethod();
+        $requestMethod = static::$request->getMethod();
 
-        if (method_exists(Router::$instance, $method))
+        if (method_exists($instance, $method))
         {
-            return call_user_func_array([Router::$instance, $method], $parameter);
+            return call_user_func_array([$instance, $method], $parameter);
         }
 
-        if (in_array($method, Router::$instance->scope['method']))
+        if (in_array($method, $instance->scope['method']))
         {
-            Router::$instance->route[$method][] = $parameter;
+            $instance->route[$method][] = $parameter;
         }
     }
 }
