@@ -3,14 +3,14 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:54:19
- * @modify date 2022-04-14 08:47:25
+ * @modify date 2022-04-18 16:47:00
  * @license GPLv3
  * @desc [description]
  */
 
 namespace Zein\Http\Router;
 
-use Zein\Http\{Router,Request};
+use Zein\Http\{Router,Request,Response};
 
 class Resolver
 {
@@ -39,7 +39,7 @@ class Resolver
     {
         $request = $this->router->getRequest();
 
-        $this->route = array_values(array_filter($this->router->getRoute($request->getMethod()), function($route) use($request) {
+        $this->route = array_values(array_filter($this->router->getRoute($request->server('REQUEST_METHOD')), function($route) use($request) {
             $registerPath = explode('/', trim($route[0], '/'));
             $requestPath = explode('/', trim($request->getPath(), '/'));
 
@@ -56,6 +56,8 @@ class Resolver
      */
     public function call()
     {
+        if (empty($this->route)) exit(Response::abort(404));
+
         $registerPath = explode('/', trim($this->route[0], '/'));
         $currentPath = explode('/', trim($this->router->getRequest()->getPath(), '/'));
 

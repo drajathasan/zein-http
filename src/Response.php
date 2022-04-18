@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-13 12:45:34
- * @modify date 2022-04-16 08:26:12
+ * @modify date 2022-04-18 16:46:18
  * @license GPLv3
  * @desc [description]
  */
@@ -11,6 +11,7 @@
 namespace Zein\Http;
 
 use DateTime;
+use Zein\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -55,6 +56,25 @@ class Response extends SymfonyResponse
         $instance->setCache(($instance->cacheList));
 
         return $instance;
+    }
+
+    public static function abort(int $httpStatusCode)
+    {
+        $instance = static::getInstance();
+        $request = new Request;
+
+        // Set http status code
+        $instance->setStatusCode($httpStatusCode);
+
+        // set content
+        $content = static::$statusTexts[$httpStatusCode]??'Error ' . $httpStatusCode;
+        if ($request->isJson())
+        {
+            $content = json_encode(['status' => false, 'message' => $content]);
+        }
+
+        $instance->setContent($content);
+        $instance->send();
     }
 
     public static function json($data, int $httpResponseCode = 200)

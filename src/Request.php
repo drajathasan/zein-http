@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-08 11:25:46
- * @modify date 2022-04-13 10:13:53
+ * @modify date 2022-04-18 16:41:42
  * @license GPLv3
  * @desc [description]
  */
@@ -85,6 +85,16 @@ class Request extends SymfonyRequest
         }
 
         return $data;
+    }
+
+    /**
+     * Check if client request is json or not
+     *
+     * @return boolean
+     */
+    public function isJson()
+    {
+        return $this->server('HTTP_ACCEPT') === 'application/json' ? true : false;
     }
 
     /**
