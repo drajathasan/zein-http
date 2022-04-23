@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-08 11:25:46
- * @modify date 2022-04-18 16:41:42
+ * @modify date 2022-04-21 14:00:24
  * @license GPLv3
  * @desc [description]
  */
@@ -115,6 +115,11 @@ class Request extends SymfonyRequest
             if (count($parameter) === 0) return $class;
 
             return call_user_func_array([$class, 'get'], $parameter);
+        }
+
+        if (method_exists($static, $method))
+        {
+            return call_user_func_array([$static, $method], $parameter);
         }
     }
 

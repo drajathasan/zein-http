@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-13 12:45:34
- * @modify date 2022-04-18 16:46:18
+ * @modify date 2022-04-23 07:12:59
  * @license GPLv3
  * @desc [description]
  */
@@ -58,13 +58,15 @@ class Response extends SymfonyResponse
         return $instance;
     }
 
-    public static function abort(int $httpStatusCode)
+    public static function abort(int $httpStatusCode, $callback = '')
     {
         $instance = static::getInstance();
         $request = new Request;
 
         // Set http status code
         $instance->setStatusCode($httpStatusCode);
+
+        if (is_callable($callback)) exit($callback($request, $instance));
 
         // set content
         $content = static::$statusTexts[$httpStatusCode]??'Error ' . $httpStatusCode;
@@ -75,6 +77,7 @@ class Response extends SymfonyResponse
 
         $instance->setContent($content);
         $instance->send();
+        exit;
     }
 
     public static function json($data, int $httpResponseCode = 200)

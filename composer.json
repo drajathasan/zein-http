@@ -10,7 +10,8 @@
         "psr-4": {
             "Zein\\Http\\": "src/",
             "App\\": "test/app/"
-        }
+        },
+        "files": ["src/Supports/Dump.php","src/Supports/Extract.php","src/Supports/Response.php"]
     },
     "authors": [
         {

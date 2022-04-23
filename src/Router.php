@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:55:52
- * @modify date 2022-04-14 08:53:21
+ * @modify date 2022-04-23 06:25:38
  * @license GPLv3
  * @desc [description]
  */
@@ -11,10 +11,38 @@
 namespace Zein\Http;
 
 use Zein\Http\Request;
-use Zein\Http\Router\Resolver;
+use Zein\Http\Router\{Resolver,Prefix,Middleware,Controller};
 
 class Router
-{
+{   
+    /**
+     * Route prefix
+     *
+     * @var string
+     */
+    private string $prefix = '';
+
+    /**
+     * Route middleware
+     *
+     * @var string
+     */
+    private string $middlewareClass = '';
+
+    /**
+     * Route controller
+     *
+     * @var string
+     */
+    private string $controllerClass = '';
+
+    /**
+     * Route directory path
+     *
+     * @var string
+     */
+    private string $routeDirectoryPath = __DIR__ . '/../test/';
+
     /**
      * Current route
      *
@@ -28,13 +56,18 @@ class Router
      * @var array
      */
     private array $scope = [
-        'method' => [
+        'httpmethod' => [
             'get',
             'post',
             'patch',
             'put',
             'delete'
         ],
+        'class' => [
+            'middleware' => Middleware::class,
+            'prefix' => Prefix::class,
+            'controller' => Controller::class
+        ]
     ];
     
     /**
@@ -89,6 +122,57 @@ class Router
     }
 
     /**
+     * Set route prefix
+     *
+     * @return void
+     */
+    public function setPrefix(string $prefix)
+    {
+        $this->prefix = $prefix;
+    }
+
+    /**
+     * Set route middleware
+     *
+     * @return void
+     */
+    public function setMiddleware(string $middlewareClass)
+    {
+        $this->middlewareClass = $middlewareClass;
+    }
+
+    /**
+     * Set controller class
+     *
+     * @param string $controllerClass
+     * @return void
+     */
+    public function setController(string $controllerClass)
+    {
+        $this->controllerClass = $controllerClass;
+    }
+
+    public function getMiddleware()
+    {
+        $middlewarePath = self::getInstance()->routeDirectoryPath . 'middleware.php';
+
+        if (file_exists($middlewarePath))
+        {
+            return $middlewarePath;   
+        }
+    }
+
+    /**
+     * Set route base path
+     *
+     * @return void
+     */
+    public static function basePath(string $routeDirectoryPath)
+    {
+        self::getInstance()->routeDirectoryPath = $routeDirectoryPath;
+    }
+
+    /**
      * Running match route
      *
      * @return void
@@ -100,11 +184,11 @@ class Router
 
     public function __call(string $method, array $parameter)
     {
-        $this->getRequest();
+        // $this->getRequest();
 
-        $requestMethod = strtolower($this->request->getMethod());
+        $requestMethod = strtolower($this->getRequest()->getMethod());
 
-        if (isset($this->scope['method'][$requestMethod]))
+        if (isset($this->scope['httpmethod'][$requestMethod]))
         {
             $this->route[$requestMethod][] = $parameter[0];
             return;
@@ -123,9 +207,32 @@ class Router
             return call_user_func_array([$instance, $method], $parameter);
         }
 
-        if (in_array($method, $instance->scope['method']))
+        // Call http method
+        if (in_array($method, $instance->scope['httpmethod']))
         {
+            if (!empty($instance->prefix)) {
+                $parameter[0] = $instance->prefix . $parameter[0];
+            }
+
+            if (!empty($instance->controllerClass) && is_string($parameter[1]))
+            {
+                $parameter[1] = [$instance->controllerClass, $parameter[1]];
+            }
+
+            if (!empty($instance->middlewareClass) && !is_null($middleware = $instance->getMiddleware()))
+            {
+                $middlewareList = require $middleware;
+                $parameter[] = $middlewareList['middleware'][$instance->middlewareClass]??null;
+            }
+
             $instance->route[$method][] = $parameter;
+        }
+
+        // Call module name
+        if (array_key_exists($method, $instance->scope['class']))
+        {
+            $class = $instance->scope['class'][$method];
+            return call_user_func_array([$class::getInstance(), $method], $parameter);
         }
     }
 }
