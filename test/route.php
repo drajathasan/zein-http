@@ -20,7 +20,7 @@ Router::controller(\App\ExampleController::class)->group(function(){
         Router::middleware('before')->group(function(){
             Router::get('/member', 'run');
         
-            Router::post('/dosen/{id}/{string}', function(Request $request, $id){
+            Router::post('/dosen/{id}', function(){
                 dd(func_get_args());
             });
         });

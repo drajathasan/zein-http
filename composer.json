@@ -3,7 +3,8 @@
     "description": "Http library for manage request, response & route http content",
     "type": "library",
     "require": {
-        "symfony/http-foundation": "^5"
+        "symfony/http-foundation": "^5",
+        "guzzlehttp/guzzle": "^7.4"
     },
     "license": "GPL-3.0",
     "autoload": {

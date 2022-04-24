@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:54:19
- * @modify date 2022-04-23 07:12:30
+ * @modify date 2022-04-25 06:34:45
  * @license GPLv3
  * @desc [description]
  */
@@ -75,7 +75,9 @@ class Resolver
         {
             foreach ($registerPath as $index => $path) {
                 if ($path === $requestedPath[$index]) $pass++;
-                if (preg_match('/\/{\w+}/i', $path)) $pass++;
+                if (preg_match('/{\w+}/i', $path)) {
+                    $pass++;
+                }
             }
         }
 
@@ -102,6 +104,14 @@ class Resolver
         // Middleware first before main controller run
         if (isset($this->route[2]) && !is_null($this->route[2]))
         {
+            if (!class_exists($this->route[2]))
+            {
+                Response::abort(500, function($request, $response){
+                    $response->setContent("Middleware {$this->route[2]} not found!");
+                    $response->send();
+                });
+            }
+
             $middleware = new $this->route[2];
             $middleware->handle(new Request, function() {
                 exit($this->call());
@@ -114,8 +124,10 @@ class Resolver
     private function call()
     {
         try {
-            if (is_array($this->route[1]) && class_exists($this->route[1][0]))
+            if (is_array($this->route[1]))
             {
+                if (!class_exists($this->route[1][0])) throw new Exception("Class {$this->route[1][0]} not found!");
+                
                 // Scan parameter if has class or just string,int etc
                 $parameter = $this->scanMethodParameter($this->route[1][0], $this->route[1][1], $this->parameter);
                 $this->result = call_user_func_array([(new $this->route[1][0]), $this->route[1][1]], $parameter);
@@ -127,7 +139,7 @@ class Resolver
             else
             {
                 $type = gettype($this->route[1]);
-                throw new Exception('Parameter #1 of $this->route must be an controller class or closure.');
+                throw new Exception("Parameter #1 of \$this->route must be an controller class or closure. {$type} given.");
             }
         } catch (Exception $e) {
             Response::abort(500, function($request, $response) use($e) {
