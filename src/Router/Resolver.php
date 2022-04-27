@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:54:19
- * @modify date 2022-04-25 06:34:45
+ * @modify date 2022-04-25 07:38:15
  * @license GPLv3
  * @desc [description]
  */
@@ -49,7 +49,7 @@ class Resolver
         // Regular search
         $matchRoute = array_values(array_filter($routes??[], function($route) use($request) {            
             $registerPath = explode('/', trim($route[0], '/'));
-            $requestPath = explode('/', trim($request->getPath(), '/'));
+            $requestPath = explode('/', trim($request->getPath($this->router->getMode()), '/'));
 
             if ($this->comparePerPath($registerPath, $requestPath)) return true;
         }))[0]??'';

@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-13 12:45:34
- * @modify date 2022-04-23 07:12:59
+ * @modify date 2022-04-26 12:14:18
  * @license GPLv3
  * @desc [description]
  */
@@ -12,11 +12,14 @@ namespace Zein\Http;
 
 use DateTime;
 use Zein\Http\Request;
+use Zein\Http\Response\File;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Response extends SymfonyResponse
 {
+    use File;
+    
     private static $instance = null;
     private array $cacheList = [
         'must_revalidate'  => false,
@@ -38,9 +41,9 @@ class Response extends SymfonyResponse
         'any' => 'closure'
     ];
 
-    private static function getInstance()
+    private static function getInstance($contruct = '')
     {
-        if (is_null(self::$instance)) self::$instance = new Response;
+        if (is_null(self::$instance)) self::$instance = new Response($contruct);
 
         return self::$instance;
     }
@@ -78,6 +81,17 @@ class Response extends SymfonyResponse
         $instance->setContent($content);
         $instance->send();
         exit;
+    }
+
+    public static function setHeader(array $headers)
+    {
+        $instance = static::getInstance();
+
+        foreach ($headers as $header) {
+            $instance->headers->set($header[0], $header[1]);
+        }
+
+        return $instance;
     }
 
     public static function json($data, int $httpResponseCode = 200)

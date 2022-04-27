@@ -6,6 +6,9 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Zein\Http\Client;
 
-$Quotes = Client::get('https://sia.ump.ac.id/quotes');
+$download = Client::download('http://192.168.7.88:7000/test/route.php/download/khs', __DIR__);
 
-dd($Quotes->getBody()->getContents());
+if ($download->isDownloaded())
+{
+    $download->saveAs(rand(1,10000) . '-khs.pdf');
+}

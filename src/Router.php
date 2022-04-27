@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-04-12 13:55:52
- * @modify date 2022-04-23 06:25:38
+ * @modify date 2022-04-25 07:37:53
  * @license GPLv3
  * @desc [description]
  */
@@ -69,6 +69,13 @@ class Router
             'controller' => Controller::class
         ]
     ];
+
+    /**
+     * Path Mode
+     * 
+     * options: query => ?route= | server - get value from $_SERVER['PATH_INFO'] => index.php/route/path
+     */
+    private string $mode = 'query';
     
     /**
      * Request instance
@@ -119,6 +126,27 @@ class Router
         if (empty($method)) return Router::$instance->route;
 
         return Router::$instance->route[strtolower($method)]??null;
+    }
+
+    /**
+     * Getter for router mode
+     *
+     * @return void
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * Setter for router mode
+     *
+     * @param string $mode
+     * @return void
+     */
+    public function setMode(string $mode)
+    {
+        $this->mode = $mode;
     }
 
     /**
